@@ -16,6 +16,17 @@ class Incident(Base):
     incident_type: Mapped[str] = mapped_column(String(50))
     severity: Mapped[str] = mapped_column(String(50), default="MEDIUM")
     priority: Mapped[str] = mapped_column(String(50), default="NORMAL")
+
+    classification_confidence: Mapped[float | None] = mapped_column(
+        Float,
+        nullable=True
+    )
+
+    classification_reasoning: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
+
     status: Mapped[str] = mapped_column(String(50), default="ACTIVE")
     source: Mapped[str] = mapped_column(String(50), default="CITIZEN")
 
