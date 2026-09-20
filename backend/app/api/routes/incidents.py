@@ -5,6 +5,7 @@ from app.crud.incident import (
     get_incident,
     get_incidents,
     update_incident,
+    resolve_and_delete_incident,
 )
 from app.db.session import get_db
 from app.schemas.incident import (
@@ -153,3 +154,27 @@ def update_single_incident(
         )
 
     return incident
+
+@router.patch("/{incident_id}/resolve")
+async def resolve_incident_route(
+    incident_id: int,
+    db: Session = Depends(get_db)
+):
+    result = resolve_and_delete_incident(
+        db,
+        incident_id
+    )
+
+    if not result:
+        raise HTTPException(
+            status_code=404,
+            detail="Incident not found"
+        )
+
+    await manager.broadcast({
+        "type": "INCIDENT_RESOLVED",
+        "incident_id": incident_id,
+        "message": "Incident resolved and deleted"
+    })
+
+    return result

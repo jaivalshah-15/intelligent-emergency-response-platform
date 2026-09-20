@@ -339,3 +339,12 @@ button {
     height: 350px;
   }
 }
+
+.resolve-incident-button {
+  margin-top: 10px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}

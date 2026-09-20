@@ -303,7 +303,49 @@ async function fetchAnalytics() {
       setError("Unable to resolve alert.");
     }
   }
+  
+  // =========================
+  // RESOLVE INCIDENT
+  // =========================
+async function resolveIncident(incidentId) {
+  const confirmed = window.confirm(
+    `Resolve incident #${incidentId}? This will remove it from the active incident list.`
+  );
 
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_URL}/api/incidents/${incidentId}/resolve`,
+      {
+        method: "PATCH",
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.detail || "Failed to resolve incident"
+      );
+    }
+
+    setMessage(
+      `Incident #${incidentId} resolved and deleted.`
+    );
+
+    await fetchIncidents();
+    await fetchAlerts();
+    await fetchAnalytics();
+  } catch (err) {
+    console.error("Resolve incident error:", err);
+    setError(
+      err.message || "Unable to resolve incident."
+    );
+  }
+}
   // =========================
   // ACTIVE ALERTS
   // =========================
@@ -724,6 +766,13 @@ async function fetchAnalytics() {
                       ).toLocaleString()
                     : "Not available"}
                 </p>
+                <button
+                  type="button"
+                  className="resolve-incident-button"
+                  onClick={() => resolveIncident(incident.id)}
+                >
+                  ✅ Resolve Incident
+                </button>
                 <button
                     type="button"
                     className="ai-assistant-button"

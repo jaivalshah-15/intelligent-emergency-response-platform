@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware  
 from app.api.routes.incidents import router as incidents_router
@@ -19,7 +20,14 @@ from app.api.routes.alerts import (
 from app.api.routes.ai_assistance import (
     router as ai_assistance_router
 )
-
+frontend_urls = [
+    url.strip()
+    for url in os.getenv(
+        "FRONTEND_URLS",
+        "http://localhost:5173"
+    ).split(",")
+    if url.strip()
+]
 app = FastAPI(
     title="Intelligent Emergency Response Platform",
     description="Backend API for PS-9",
@@ -40,7 +48,7 @@ app.include_router(analytics_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=frontend_urls,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

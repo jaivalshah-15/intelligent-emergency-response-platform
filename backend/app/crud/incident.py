@@ -1,10 +1,15 @@
+from sqlalchemy import or_
+from sqlalchemy.orm import Session
 from app.crud.duplicate import create_duplicate_candidate
+from app.models.alert import Alert
+from app.models.assignment import ResourceAssignment
+from app.models.duplicate import DuplicateCandidate
+from app.models.incident import Incident
+from app.models.recommendation import ResourceRecommendation
+from app.models.resource import Resource
+from app.schemas.incident import IncidentCreate
 from app.services.duplicate_detector import find_possible_duplicates
 from app.services.incident_classifier import classify_incident
-from sqlalchemy.orm import Session  
-from app.models.incident import Incident
-from app.schemas.incident import IncidentCreate
-from app.services.websocket_manager import manager
 
 def create_incident(db: Session, incident_data: IncidentCreate):
     classification = classify_incident(
@@ -86,3 +91,72 @@ def update_incident(
     db.refresh(incident)
 
     return incident
+
+
+def resolve_and_delete_incident(
+    db: Session,
+    incident_id: int
+):
+    incident = (
+        db.query(Incident)
+        .filter(Incident.id == incident_id)
+        .first()
+    )
+
+    if not incident:
+        return None
+
+    # Find assignments so assigned resources can be released
+    assignments = (
+        db.query(ResourceAssignment)
+        .filter(
+            ResourceAssignment.incident_id == incident_id,
+            ResourceAssignment.status == "ASSIGNED"
+        )
+        .all()
+    )
+
+    # Release assigned resources
+    for assignment in assignments:
+        resource = (
+            db.query(Resource)
+            .filter(Resource.id == assignment.resource_id)
+            .first()
+        )
+
+        if resource:
+            resource.status = "AVAILABLE"
+
+    # Delete assignments
+    db.query(ResourceAssignment).filter(
+        ResourceAssignment.incident_id == incident_id
+    ).delete(synchronize_session=False)
+
+    # Delete recommendations
+    db.query(ResourceRecommendation).filter(
+        ResourceRecommendation.incident_id == incident_id
+    ).delete(synchronize_session=False)
+
+    # Delete duplicate records involving this incident
+    db.query(DuplicateCandidate).filter(
+        or_(
+            DuplicateCandidate.incident_id == incident_id,
+            DuplicateCandidate.possible_duplicate_id == incident_id
+        )
+    ).delete(synchronize_session=False)
+
+    # Delete related alerts
+    db.query(Alert).filter(
+        Alert.incident_id == incident_id
+    ).delete(synchronize_session=False)
+
+    # Delete the incident
+    db.delete(incident)
+
+    db.commit()
+
+    return {
+        "incident_id": incident_id,
+        "status": "RESOLVED",
+        "message": "Incident resolved and deleted successfully"
+    }
