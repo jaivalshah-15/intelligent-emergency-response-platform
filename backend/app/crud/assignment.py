@@ -20,7 +20,7 @@ def create_assignment(
     if not resource:
         return None
 
-    if resource.status != "AVAILABLE":
+    if resource.status.upper() != "AVAILABLE":
         return None
 
     assignment = ResourceAssignment(

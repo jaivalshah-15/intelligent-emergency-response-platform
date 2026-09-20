@@ -1,16 +1,42 @@
 services:
-  postgres:
+  db:
     image: postgres:16
-    container_name: emergency_postgres
-    restart: unless-stopped
+    container_name: emergency-db
     environment:
+      POSTGRES_USER: emergency
+      POSTGRES_PASSWORD: emergency123
       POSTGRES_DB: emergency_db
-      POSTGRES_USER: emergency_user
-      POSTGRES_PASSWORD: emergency_password
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - emergency_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U emergency -d emergency_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: emergency-backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://emergency:emergency123@db:5432/emergency_db
+      FRONTEND_URLS: http://localhost:5173,http://localhost:3000
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: emergency-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
 
 volumes:
-  postgres_data:
+  emergency_pgdata:

@@ -6,115 +6,124 @@ from app.models.assignment import ResourceAssignment
 db = SessionLocal()
 
 resources = [
-    # Ambulances
+    # =========================
+    # 5 AMBULANCES
+    # =========================
+
     {
-        "name": "Ambulance 1",
+        "name": "Nadiad Ambulance 1",
         "resource_type": "AMBULANCE",
         "status": "AVAILABLE",
-        "latitude": 22.3072,
-        "longitude": 73.1812
+        "latitude": 22.6916,
+        "longitude": 72.8634
     },
     {
-        "name": "Ambulance 2",
+        "name": "Nadiad Ambulance 2",
         "resource_type": "AMBULANCE",
         "status": "AVAILABLE",
-        "latitude": 22.3075,
-        "longitude": 73.1815
+        "latitude": 22.6920,
+        "longitude": 72.8640
     },
     {
-        "name": "Ambulance 3",
+        "name": "Nadiad Ambulance 3",
         "resource_type": "AMBULANCE",
         "status": "AVAILABLE",
-        "latitude": 22.3080,
-        "longitude": 73.1820
+        "latitude": 22.6925,
+        "longitude": 72.8645
     },
     {
-        "name": "Ambulance 4",
+        "name": "Nadiad Ambulance 4",
         "resource_type": "AMBULANCE",
         "status": "AVAILABLE",
-        "latitude": 22.3085,
-        "longitude": 73.1825
+        "latitude": 22.6930,
+        "longitude": 72.8650
     },
     {
-        "name": "Ambulance 5",
+        "name": "Nadiad Ambulance 5",
         "resource_type": "AMBULANCE",
         "status": "AVAILABLE",
-        "latitude": 22.3090,
-        "longitude": 73.1830
+        "latitude": 22.6935,
+        "longitude": 72.8655
     },
 
-    # Fire Trucks
+    # =========================
+    # 5 FIRE TRUCKS
+    # =========================
+
     {
-        "name": "Fire Truck 1",
+        "name": "Nadiad Fire Truck 1",
         "resource_type": "FIRE_TRUCK",
         "status": "AVAILABLE",
-        "latitude": 22.3072,
-        "longitude": 73.1812
+        "latitude": 22.6918,
+        "longitude": 72.8637
     },
     {
-        "name": "Fire Truck 2",
+        "name": "Nadiad Fire Truck 2",
         "resource_type": "FIRE_TRUCK",
         "status": "AVAILABLE",
-        "latitude": 22.3068,
-        "longitude": 73.1808
+        "latitude": 22.6923,
+        "longitude": 72.8642
     },
     {
-        "name": "Fire Truck 3",
+        "name": "Nadiad Fire Truck 3",
         "resource_type": "FIRE_TRUCK",
         "status": "AVAILABLE",
-        "latitude": 22.3064,
-        "longitude": 73.1804
+        "latitude": 22.6928,
+        "longitude": 72.8647
     },
     {
-        "name": "Fire Truck 4",
+        "name": "Nadiad Fire Truck 4",
         "resource_type": "FIRE_TRUCK",
         "status": "AVAILABLE",
-        "latitude": 22.3060,
-        "longitude": 73.1800
+        "latitude": 22.6933,
+        "longitude": 72.8652
     },
     {
-        "name": "Fire Truck 5",
+        "name": "Nadiad Fire Truck 5",
         "resource_type": "FIRE_TRUCK",
         "status": "AVAILABLE",
-        "latitude": 22.3056,
-        "longitude": 73.1796
+        "latitude": 22.6938,
+        "longitude": 72.8657
     },
 
-    # Flood Rescue Equipment
+    # =========================
+    # 5 FLOOD RESCUE EQUIPMENT
+    # =========================
+
     {
-        "name": "Flood Rescue Equipment 1",
+        "name": "Nadiad Flood Rescue Equipment 1",
         "resource_type": "FLOOD_RESCUE_EQUIPMENT",
         "status": "AVAILABLE",
-        "latitude": 22.3072,
-        "longitude": 73.1812
+        "latitude": 22.6919,
+        "longitude": 72.8638
     },
     {
-        "name": "Flood Rescue Equipment 2",
+        "name": "Nadiad Flood Rescue Equipment 2",
         "resource_type": "FLOOD_RESCUE_EQUIPMENT",
         "status": "AVAILABLE",
-        "latitude": 22.3076,
-        "longitude": 73.1816
+        "latitude": 22.6924,
+        "longitude": 72.8643
     },
     {
-        "name": "Flood Rescue Equipment 3",
+        "name": "Nadiad Flood Rescue Equipment 3",
         "resource_type": "FLOOD_RESCUE_EQUIPMENT",
         "status": "AVAILABLE",
-        "latitude": 22.3080,
-        "longitude": 73.1820
+        "latitude": 22.6929,
+        "longitude": 72.8648
     },
     {
-        "name": "Flood Rescue Equipment 4",
+        "name": "Nadiad Flood Rescue Equipment 4",
         "resource_type": "FLOOD_RESCUE_EQUIPMENT",
         "status": "AVAILABLE",
-        "latitude": 22.3084,
-        "longitude": 73.1824
+        "latitude": 22.6934,
+        "longitude": 72.8653
     },
     {
-        "name": "Flood Rescue Equipment 5",
+        "name": "Nadiad Flood Rescue Equipment 5",
         "resource_type": "FLOOD_RESCUE_EQUIPMENT",
         "status": "AVAILABLE",
-        "latitude": 22.3088,
-        "longitude": 73.1828
+        "latitude": 22.6939,
+        "longitude": 72.8658
     }
 ]
 
@@ -129,12 +138,12 @@ try:
         synchronize_session=False
     )
 
-    # Reset resource ID numbering
+    # Reset auto-increment ID
     db.execute(
         text("ALTER SEQUENCE resources_id_seq RESTART WITH 1")
     )
 
-    # Add the 15 resources
+    # Add the 15 permanent resources
     for data in resources:
         resource = Resource(**data)
         db.add(resource)
@@ -142,6 +151,9 @@ try:
     db.commit()
 
     print("15 resources added successfully.")
+    print("5 Ambulances")
+    print("5 Fire Trucks")
+    print("5 Flood Rescue Equipment")
 
 except Exception as e:
     db.rollback()
