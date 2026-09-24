@@ -1,7 +1,11 @@
 export function connectWebSocket(onMessage) {
-  const socket = new WebSocket(
-    "ws://localhost:8000/api/ws"
-  );
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  const wsUrl = apiUrl
+    .replace(/^https:/, "wss:")
+    .replace(/^http:/, "ws:");
+
+  const socket = new WebSocket(`${wsUrl}/api/ws`);
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
@@ -9,10 +13,7 @@ export function connectWebSocket(onMessage) {
   };
 
   socket.onerror = (error) => {
-    console.error(
-      "WebSocket error:",
-      error
-    );
+    console.error("WebSocket error:", error);
   };
 
   return socket;

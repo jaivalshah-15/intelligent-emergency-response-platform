@@ -6,7 +6,7 @@ function ResourceAssignment({
   async function assignResource() {
     try {
       const response = await fetch(
-        "http://localhost:8000/api/assignments/",
+        `${import.meta.env.VITE_API_URL}/api/assignments/`,
         {
           method: "POST",
           headers: {
